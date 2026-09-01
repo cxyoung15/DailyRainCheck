@@ -6,4 +6,6 @@ Imports:
     openxlsx,
     polite,
     rvest,
+    sf,
+    sp,
     stringr
