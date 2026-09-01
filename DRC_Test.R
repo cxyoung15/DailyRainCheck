@@ -135,7 +135,7 @@ rainfall_for_kml <- data.frame(precip_amounts)
 colnames(rainfall_for_kml) <- c("Station_ID", "Latitude", "Longitude", "Rain")
 rainfall_totals_for_kml <- merge(sga_sta, rainfall_for_kml, by = "Station_ID", all = FALSE)
 rainfall_totals_for_kml <- rainfall_totals_for_kml %>% relocate(`Growing.Area`)
-rainfall_over3 <- rainfall_totals_for_kml %>% filter(Rain <= 3)
+rainfall_over3 <- rainfall_totals_for_kml %>% filter(Rain >= 3)
 
 if (nrow(rainfall_over3 > 0)){
   SGA <- rainfall_over3$`Growing.Area`
