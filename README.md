@@ -1,2 +1,2 @@
-# DRC_Test
-Repo to test publishing an automated R-based web scraper to GitHub
+# DailyRainCheck
+This repo is for an automated R-based web-scraper, titled 'DailyRainCheck', which is designed to scrape the precipitation data of over 200 Weather Underground stations every morning at 6:00 AM. After scraping, the script will parse the data and publish it to an .xlsx file. If any station exceeds 3-inches of precipitation, a .kml and .txt file will be generated. The .kml file shows in Google Earth which stations exceeded 3-inches while the .txt file provides a simple text-based alert of the stations that went over 3-inches. This repo is currently a work-in-progress. Future additions to the repo will include methods to download any generated files and/or publish the results directly to other sites, such as Microsoft Teams or Sharepoint.
