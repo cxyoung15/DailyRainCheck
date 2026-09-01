@@ -72,7 +72,7 @@ for (i in html_documents){
 rainfall_table <- data.frame(precip_amounts)
 colnames(rainfall_table) <- c("Station_ID", "Latitude", "Longitude", date_for_table)
 rainfall_totals <- merge(sga_sta, rainfall_table, by = "Station_ID", all = FALSE)
-rainfall_totals <- rainfall_totals %>% relocate(`Growing Area`)
+rainfall_totals <- rainfall_totals %>% relocate(`Growing.Area`)
 colnames(rainfall_totals) <- c("Growing Area", "Station", "Latitude", "Longitude", date_for_table)
 rainfall_totals_sorted <- rainfall_totals %>% arrange(across(ncol(.), desc))
 
