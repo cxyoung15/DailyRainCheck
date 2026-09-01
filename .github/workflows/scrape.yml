@@ -38,7 +38,7 @@ jobs:
 
       # Step 5: Execute the scraping script
       - name: Run R scraper script
-        run: Rscript DRC_Test.R
+        run: Rscript DailyRainCheck.R
 
       # Step 6: Commit and push the generated data back to the repo
       - name: Commit and push changes
