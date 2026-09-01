@@ -74,11 +74,90 @@ colnames(rainfall_table) <- c("Station_ID", "Latitude", "Longitude", date_for_ta
 rainfall_totals <- merge(sga_sta, rainfall_table, by = "Station_ID", all = FALSE)
 rainfall_totals <- rainfall_totals %>% relocate(`Growing.Area`)
 colnames(rainfall_totals) <- c("Growing Area", "Station", "Latitude", "Longitude", date_for_table)
+rainfall_totals <- rainfall_totals %>% mutate(across(names(rainfall_totals[3]):names(rainfall_totals[5]), as.numeric))
 rainfall_totals_sorted <- rainfall_totals %>% arrange(across(ncol(.), desc))
+
+level1 <- which(rainfall_totals_sorted[5] >= 2.5 & rainfall_totals_sorted[5] < 2.6)
+level2 <- which(rainfall_totals_sorted[5] >= 2.6 & rainfall_totals_sorted[5] < 2.7)
+level3 <- which(rainfall_totals_sorted[5] >= 2.7 & rainfall_totals_sorted[5] < 2.8)
+level4 <- which(rainfall_totals_sorted[5] >= 2.8 & rainfall_totals_sorted[5] < 2.9)
+level5 <- which(rainfall_totals_sorted[5] >= 2.9 & rainfall_totals_sorted[5] < 3.0)
+level6 <- which(rainfall_totals_sorted[5] >= 3)
 
 current_time <- format(Sys.time(), "%H%M")
 file_loc <- paste0("Totals/Rainfall_Data_", date_for_file, "_@_", current_time, ".xlsx")
+
 create_wb <- createWorkbook()
 addWorksheet(create_wb, sheetName = "Daily Rainfall")
 writeData(create_wb, sheet = "Daily Rainfall", x = rainfall_totals_sorted, startCol = 1, startRow = 1, colNames = TRUE, rowNames = FALSE, keepNA = FALSE)
+
+num_style <- createStyle(numFmt = "#,##0.00")
+addStyle(create_wb, sheet = "Daily Rainfall", style = num_style, rows = 2:(nrow(rainfall_totals_sorted)+1), cols = 3:5, gridExpand = TRUE, stack = TRUE)
+
+highlight_style_level1 <- createStyle(fgFill = "#FFD900")
+highlight_style_level2 <- createStyle(fgFill = "#FFBA0D")
+highlight_style_level3 <- createStyle(fgFill = "#FF9C1A")
+highlight_style_level4 <- createStyle(fgFill = "#FF7D26")
+highlight_style_level5 <- createStyle(fgFill = "#FF5F33")
+highlight_style_level6 <- createStyle(fgFill = "#FF4040")
+
+# Conditionally changes the background color of cells depending on how much rainfall was received
+if (length(level1) > 0){
+  addStyle(create_wb, sheet = "Daily Rainfall", style = highlight_style_level1, rows = level1+1, cols = 5, gridExpand = TRUE, stack = TRUE)
+}
+if (length(level2) > 0){
+  addStyle(create_wb, sheet = "Daily Rainfall", style = highlight_style_level2, rows = level2+1, cols = 5, gridExpand = TRUE, stack = TRUE)
+}
+if (length(level3) > 0){
+  addStyle(create_wb, sheet = "Daily Rainfall", style = highlight_style_level3, rows = level3+1, cols = 5, gridExpand = TRUE, stack = TRUE)
+}
+if (length(level4) > 0){
+  addStyle(create_wb, sheet = "Daily Rainfall", style = highlight_style_level4, rows = level4+1, cols = 5, gridExpand = TRUE, stack = TRUE)
+}
+if (length(level5) > 0){
+  addStyle(create_wb, sheet = "Daily Rainfall", style = highlight_style_level5, rows = level5+1, cols = 5, gridExpand = TRUE, stack = TRUE)
+}
+if (length(level6) > 0){
+  addStyle(create_wb, sheet = "Daily Rainfall", style = highlight_style_level6, rows = level6+1, cols = 5, gridExpand = TRUE, stack = TRUE)
+}
+
+nums_center_style <- createStyle(halign = "center", valign = "center")
+addStyle(create_wb, sheet = "Daily Rainfall", style = nums_center_style, 
+         rows = 1:(nrow(rainfall_totals_sorted)+1), cols = 1:5, gridExpand = TRUE, stack = TRUE)
+
+setColWidths(create_wb, sheet = "Daily Rainfall", cols = 1:5, widths = c(30, 15, 12, 12, 12))
+
 saveWorkbook(create_wb, file = file_loc, overwrite = TRUE)
+
+rainfall_for_kml <- data.frame(precip_amounts)
+colnames(rainfall_for_kml) <- c("Station_ID", "Latitude", "Longitude", "Rain")
+rainfall_totals_for_kml <- merge(sga_sta, rainfall_for_kml, by = "Station_ID", all = FALSE)
+rainfall_totals_for_kml <- rainfall_totals_for_kml %>% relocate(`Growing.Area`)
+rainfall_over3 <- rainfall_totals_for_kml %>% filter(Rain <= 3)
+
+if (nrow(rainfall_over3 > 0)){
+  SGA <- rainfall_over3$`Growing.Area`
+  Station <- rainfall_over3$Station
+  Latitude <- rainfall_over3$Latitude
+  Longitude <- rainfall_over3$Longitude
+  Rainfall <- rainfall_over3$Rain
+  
+  current_time <- format(Sys.time(), "%H%M")
+  file_loc_kml <- paste0("Google_Earth/Emergency_Stations_", date_for_file, "_", current_time, ".kml")
+  file_loc_onedrive <- paste0("Alert_Texts/Rainfall_Alert_", date_for_file, "_@_", current_time, ".txt")
+  
+  rainfall_df <- data.frame(SGA, Station, Latitude, Longitude, Rainfall)
+  rainfall_df$Description_Label <- paste0("SGA: ", rainfall_df$SGA, "\n", "\n", "WU Station: ", rainfall_df$Station, "\n", "\n", "Date: ", date_for_table)
+  rainfall_df$Rain_Amounts <- paste0(format(rainfall_df$Rainfall, digits = 3), '"')
+  rain_points <- rainfall_df %>% st_as_sf(coords = c("Longitude", "Latitude"), crs = 4326) %>%
+    select(Description = Description_Label, Name = Rain_Amounts)
+  
+  sf::st_write(rain_points, file_loc_kml, append = FALSE)
+  
+  rainfall_over3$Alert <- paste0(rainfall_over3$Station, " - ", rainfall_over3$Rain, " inches (", rainfall_over3$`Growing.Area`,
+                                 " ; ", rainfall_over3$Latitude, ", ", rainfall_over3$Longitude, ")")
+  
+  alert_message <- c("Extraordinary rainfall levels detected at: ", rainfall_over3$Alert)
+  
+  writeLines(alert_message, file_loc_onedrive)
+}
