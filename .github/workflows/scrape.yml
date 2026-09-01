@@ -34,7 +34,7 @@ jobs:
       # Step 4: Install necessary R packages
       - name: Install R packages
         run: |
-          Rscript -e "install.packages(c('dplyr', 'furrr', 'future', 'future.apply', 'openxlsx', 'polite', 'rvest', 'stringr'), dependencies=TRUE)"
+          Rscript -e "install.packages(c('dplyr', 'furrr', 'future', 'future.apply', 'openxlsx', 'polite', 'rvest', 'sf', 'sp', 'stringr'), dependencies=TRUE)"
 
       # Step 5: Execute the scraping script
       - name: Run R scraper script
