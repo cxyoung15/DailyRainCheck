@@ -46,6 +46,8 @@ jobs:
           git config --global user.name "GitHub Actions Bot"
           git config --global user.email "actions@github.com"
           git add Totals/Rainfall_Data_*.xlsx
+          git add Google_Earth/Emergency_Stations_*.kml
+          git add Alert_Texts/Rainfall_Alert_*.txt
           
           # Only commit and push if the file actually changed to avoid empty workflow failures
           if ! git diff --cached --quiet; then
