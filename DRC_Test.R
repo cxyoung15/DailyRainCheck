@@ -7,9 +7,9 @@ library(polite, quietly = TRUE)
 library(rvest, quietly = TRUE)
 library(stringr, quietly = TRUE)
 
-sga_sta <- data.frame("50-Hempstead Harbor", "KNYGLENC2")
-colnames(sga_sta) <- c("Growing Area", "Station_ID")
+sga_sta <- read.xlsx("RainfallStations.xlsx", sheet = 1)
 rainfall_stations <- data.frame(sga_sta$Station_ID)
+rainfall_stations <- data.frame(rainfall_stations[1:10,])
 colnames(rainfall_stations) <- "Station_ID"
 
 date_to_run <- format((Sys.Date()-1), "%Y-%m-%d")
