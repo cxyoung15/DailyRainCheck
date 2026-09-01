@@ -1,0 +1,9 @@
+Imports:
+    dplyr,
+    furrr,
+    future,
+    future.apply,
+    openxlsx,
+    polite,
+    rvest,
+    stringr
