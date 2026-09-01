@@ -5,6 +5,8 @@ library(future.apply, quietly = TRUE)
 library(openxlsx, quietly = TRUE)
 library(polite, quietly = TRUE)
 library(rvest, quietly = TRUE)
+library(sf, quietly = TRUE)
+library(sp, quietly = TRUE)
 library(stringr, quietly = TRUE)
 
 sga_sta <- read.xlsx("RainfallStations.xlsx", sheet = 1)
