@@ -49,11 +49,13 @@ jobs:
           git add Totals/Rainfall_Data_*.xlsx
           git add Google_Earth/Emergency_Stations_*.kml
           git add Alert_Texts/Rainfall_Alert_*.txt
+
+          git pull --rebase origin main
           
           # Only commit and push if the file actually changed to avoid empty workflow failures
           if ! git diff --cached --quiet; then
             git commit -m "Auto-update scraped data: $(date -u +'%Y-%m-%d %H:%M:%S') UTC"
-            git push
+            git push origin main
           else
             echo "No changes to commit"
           fi
