@@ -50,7 +50,11 @@ jobs:
           git add Google_Earth/Emergency_Stations_*.kml
           git add Alert_Texts/Rainfall_Alert_*.txt
 
+          git stash
+
           git pull --rebase origin main
+
+          git stash pop
           
           # Only commit and push if the file actually changed to avoid empty workflow failures
           if ! git diff --cached --quiet; then
