@@ -2,9 +2,8 @@ name: R Web Scraper Schedule
 
 on:
   schedule:
-    # Runs everyday at 6:00 AM EST/EDT
-    - cron: '0 6 * * *'
-      timezone: 'America/New_York'
+    # Runs everyday at 5:00 AM EDT - 6:00 AM EST
+    - cron: '0 10 * * *'
   workflow_dispatch: # Allows you to manually trigger the scraper from the UI
 
 jobs:
