@@ -15,7 +15,7 @@ colnames(rainfall_stations) <- "Station_ID"
 
 date_to_run <- format((Sys.Date()-1), "%Y-%m-%d")
 date_for_table <- format((Sys.Date()-1), "%m-%d-%Y")
-date_for_file <- format((Sys.Date()-1), "%Y%m%d")
+date_for_file <- format((Sys.Date()), "%Y%m%d")
 
 wunder_link <- "https://www.wunderground.com/dashboard/pws/"
 link_list <- data.frame()
