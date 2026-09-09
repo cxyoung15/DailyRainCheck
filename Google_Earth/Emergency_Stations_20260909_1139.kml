@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Folder><name>Emergency_Stations_20260909_1139</name>
+  <Placemark>
+	<name>5.19&quot;</name>
+	<description>SGA: 62-Sebonac Creeks
+
+WU Station: KNYSOUTH110
+
+Date: 09-08-2026</description>
+      <Point><coordinates>-72.43,40.92</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>
