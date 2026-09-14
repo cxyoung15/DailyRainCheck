@@ -3,7 +3,6 @@ library(furrr, quietly = TRUE)
 library(future, quietly = TRUE)
 library(future.apply, quietly = TRUE)
 library(openxlsx, quietly = TRUE)
-library(polite, quietly = TRUE)
 library(rvest, quietly = TRUE)
 library(sf, quietly = TRUE)
 library(sp, quietly = TRUE)
@@ -28,33 +27,14 @@ for (station in rainfall_stations){
 colnames(link_list) <- "Links"
 all_links <- link_list$Links
 
-html_documents <- suppressWarnings(future_map(.x = all_links, .f = ~{
-  scrape_results <- tryCatch({
-    wu_session <- polite::bow(.x)
-    page_html <- polite::scrape(wu_session)
-    if (is.null(page_html)){
-      return(NA)
-    } else {
-      html_tab <- page_html %>% html_elements("table") %>% html_table()
-      html_tab <- html_tab[[1]]
-      html_txt <- page_html %>% html_elements("div.heading, div.sub-heading") %>% html_text()
-      html_tab_txt <- append(html_tab, html_txt)
-      station_name <- data.frame(str_split(.x, "/"))[6,]
-      return(html_tab_txt)
-    }
-  }, error = function(e) NA)
-  scrape_results
-}, .options = furrr_options(seed = TRUE)))
-
-for (i in html_documents){
+for (links in all_links){
   tryCatch({
-    wu_name <- as.data.frame(i[[6]])
-    wu_name <- str_split(wu_name, " - ")
-    wu_name <- data.frame(wu_name)
-    wu_name <- tail(wu_name, n=1)[1,]
-    wu_name <- str_sub(wu_name, end = -5)
-    coordinates <- i[[5]]
-    coordinates <- str_split(coordinates, ", ")
+    page_html <- rvest::read_html(links)
+    html_tab <- page_html %>% html_elements("table") %>% html_table()
+    html_tab <- html_tab[1]
+    html_txt <- page_html %>% html_elements("div.heading, div.sub-heading") %>% html_text()
+    wu_name <- data.frame(str_split(links, "/"))[6,]
+    coordinates <- str_split(html_txt[1], ", ")
     coordinates <- data.frame(coordinates)
     coordinates <- coordinates[2:3,]
     coordinates <- str_split(coordinates, " °")
@@ -62,9 +42,10 @@ for (i in html_documents){
     wu_lon <- coordinates[[2]]
     wu_lat <- as.numeric(wu_lat[1])
     wu_lon <- as.numeric(wu_lon[1]) * -1
-    precip <- data.frame(i[[2]])
+    precip <- data.frame(html_tab)[,2]
     precip <- tail(precip, n = 1)
     precip <- stringr::str_extract(precip, "^.{4}")
+    html_documents <- append(html_documents, html_tab_txt)
     station_data <- cbind(wu_name, wu_lat, wu_lon, precip)
     precip_amounts <- rbind(precip_amounts, station_data)
   }, error = function(e) NA)
