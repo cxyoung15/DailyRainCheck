@@ -4,7 +4,6 @@ Imports:
     future,
     future.apply,
     openxlsx,
-    polite,
     rvest,
     sf,
     sp,
