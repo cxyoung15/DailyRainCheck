@@ -45,7 +45,6 @@ for (links in all_links){
     precip <- data.frame(html_tab)[,2]
     precip <- tail(precip, n = 1)
     precip <- stringr::str_extract(precip, "^.{4}")
-    html_documents <- append(html_documents, html_tab_txt)
     station_data <- cbind(wu_name, wu_lat, wu_lon, precip)
     precip_amounts <- rbind(precip_amounts, station_data)
   }, error = function(e) NA)
