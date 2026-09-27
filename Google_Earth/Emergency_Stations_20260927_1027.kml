@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Folder><name>Emergency_Stations_20260927_1027</name>
+  <Placemark>
+	<name>5.01&quot;</name>
+	<description>SGA: 28-Great Peconic Bay
+
+WU Station: KNYLAURE29
+
+Date: 09-26-2026</description>
+      <Point><coordinates>-72.55,40.96</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>7.15&quot;</name>
+	<description>SGA: 66-Block Island Sound
+
+WU Station: KNYORIEN5
+
+Date: 09-26-2026</description>
+      <Point><coordinates>-72.24,41.16</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>5.98&quot;</name>
+	<description>SGA: 19-Sag Harbor &amp; Coves
+
+WU Station: KNYSAGHA67
+
+Date: 09-26-2026</description>
+      <Point><coordinates>-72.29,41.0</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<name>3.30&quot;</name>
+	<description>SGA: 19-Sag Harbor &amp; Coves
+
+WU Station: KNYSHELT32
+
+Date: 09-26-2026</description>
+      <Point><coordinates>-72.37,41.05</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>
