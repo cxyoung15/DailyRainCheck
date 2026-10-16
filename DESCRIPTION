@@ -1,4 +1,5 @@
 Imports:
+    chromote,
     dplyr,
     furrr,
     future,
