@@ -1,3 +1,4 @@
+library(chromote, quietly = TRUE)
 library(dplyr, quietly = TRUE)
 library(furrr, quietly = TRUE)
 library(future, quietly = TRUE)
@@ -27,13 +28,19 @@ for (station in rainfall_stations){
 colnames(link_list) <- "Links"
 all_links <- link_list$Links
 
-for (links in all_links){
+for (i in seq_along(all_links)){
   tryCatch({
-    page_html <- rvest::read_html(links)
+    url <- all_links[i]
+    b <- ChromoteSession$new()
+    b$Page$navigate(url)
+    Sys.sleep(3)
+    html_content <- b$Runtime$evaluate("document.documentElement.outerHTML")$result$value
+    page_html <- rvest::read_html(url)
     html_tab <- page_html %>% html_elements("table") %>% html_table()
     html_tab <- html_tab[1]
     html_txt <- page_html %>% html_elements("div.heading, div.sub-heading") %>% html_text()
-    wu_name <- data.frame(str_split(links, "/"))[6,]
+    b$close()
+    wu_name <- data.frame(str_split(url, "/"))[6,]
     coordinates <- str_split(html_txt[1], ", ")
     coordinates <- data.frame(coordinates)
     coordinates <- coordinates[2:3,]
