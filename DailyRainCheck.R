@@ -1,9 +1,9 @@
-library(chromote, quietly = TRUE)
 library(dplyr, quietly = TRUE)
 library(furrr, quietly = TRUE)
 library(future, quietly = TRUE)
 library(future.apply, quietly = TRUE)
 library(openxlsx, quietly = TRUE)
+library(readr, quietly = TRUE)
 library(rvest, quietly = TRUE)
 library(sf, quietly = TRUE)
 library(sp, quietly = TRUE)
@@ -31,27 +31,21 @@ all_links <- link_list$Links
 for (i in seq_along(all_links)){
   tryCatch({
     url <- all_links[i]
-    b <- ChromoteSession$new()
-    b$Page$navigate(url)
+    page_html <- rvest::read_html_live(url)
     Sys.sleep(3)
-    html_content <- b$Runtime$evaluate("document.documentElement.outerHTML")$result$value
-    page_html <- rvest::read_html(url)
     html_tab <- page_html %>% html_elements("table") %>% html_table()
     html_tab <- html_tab[1]
-    html_txt <- page_html %>% html_elements("div.heading, div.sub-heading") %>% html_text()
-    b$close()
-    wu_name <- data.frame(str_split(url, "/"))[6,]
-    coordinates <- str_split(html_txt[1], ", ")
-    coordinates <- data.frame(coordinates)
-    coordinates <- coordinates[2:3,]
-    coordinates <- str_split(coordinates, " °")
-    wu_lat <- coordinates[[1]]
-    wu_lon <- coordinates[[2]]
-    wu_lat <- as.numeric(wu_lat[1])
-    wu_lon <- as.numeric(wu_lon[1]) * -1
-    precip <- data.frame(html_tab)[,2]
-    precip <- tail(precip, n = 1)
-    precip <- stringr::str_extract(precip, "^.{4}")
+    precip <- data.frame(html_tab)[,5]
+    precip <- data.frame(precip)[5,]
+    precip <- parse_number(precip)
+    html_txt2 <- page_html %>% html_elements("span") %>% html_text()
+    html_txt2 <- data.frame(html_txt2)
+    name_index <- which(html_txt2$html_txt2 == "Station ID:") + 1
+    lat_index <- which(html_txt2$html_txt2 == "Latitude:") + 1
+    lon_index <- which(html_txt2$html_txt2 == "Longitude:") + 1
+    wu_name <- html_txt2[name_index,]
+    wu_lat <- as.numeric(gsub("° N", "", html_txt2[lat_index,])) * 1
+    wu_lon <- as.numeric(gsub("° W", "", html_txt2[lon_index,])) * -1
     station_data <- cbind(wu_name, wu_lat, wu_lon, precip)
     precip_amounts <- rbind(precip_amounts, station_data)
   }, error = function(e) NA)
