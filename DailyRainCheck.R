@@ -28,23 +28,24 @@ for (station in rainfall_stations){
 colnames(link_list) <- "Links"
 all_links <- link_list$Links
 
-for (i in seq_along(all_links)){
+for (links in all_links){
   tryCatch({
-    url <- all_links[i]
-    page_html <- rvest::read_html_live(url)
-    Sys.sleep(3)
-    html_txt1 <- page_html %>% html_elements("td") %>% html_text()
-    html_txt1 <- data.frame(html_txt1)
-    precip_index <- which(html_txt1$html_txt1 == "Precipitation Accumulation") + 4
-    precip <- as.numeric(gsub("in\\*", "", html_txt1[precip_index,]))
-    html_txt2 <- page_html %>% html_elements("span") %>% html_text()
-    html_txt2 <- data.frame(html_txt2)
-    name_index <- which(html_txt2$html_txt2 == "Station ID:") + 1
-    lat_index <- which(html_txt2$html_txt2 == "Latitude:") + 1
-    lon_index <- which(html_txt2$html_txt2 == "Longitude:") + 1
-    wu_name <- html_txt2[name_index,]
-    wu_lat <- as.numeric(gsub("° N", "", html_txt2[lat_index,])) * 1
-    wu_lon <- as.numeric(gsub("° W", "", html_txt2[lon_index,])) * -1
+    page_html <- rvest::read_html(links)
+    html_tab <- page_html %>% html_elements("table") %>% html_table()
+    html_tab <- html_tab[1]
+    html_txt <- page_html %>% html_elements("div.heading, div.sub-heading") %>% html_text()
+    wu_name <- data.frame(str_split(links, "/"))[6,]
+    coordinates <- str_split(html_txt[1], ", ")
+    coordinates <- data.frame(coordinates)
+    coordinates <- coordinates[2:3,]
+    coordinates <- str_split(coordinates, " °")
+    wu_lat <- coordinates[[1]]
+    wu_lon <- coordinates[[2]]
+    wu_lat <- as.numeric(wu_lat[1])
+    wu_lon <- as.numeric(wu_lon[1]) * -1
+    precip <- data.frame(html_tab)[,2]
+    precip <- tail(precip, n = 1)
+    precip <- stringr::str_extract(precip, "^.{4}")
     station_data <- cbind(wu_name, wu_lat, wu_lon, precip)
     precip_amounts <- rbind(precip_amounts, station_data)
   }, error = function(e) NA)
