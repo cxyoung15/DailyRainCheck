@@ -33,11 +33,10 @@ for (i in seq_along(all_links)){
     url <- all_links[i]
     page_html <- rvest::read_html_live(url)
     Sys.sleep(3)
-    html_tab <- page_html %>% html_elements("table") %>% html_table()
-    html_tab <- html_tab[1]
-    precip <- data.frame(html_tab)[,5]
-    precip <- data.frame(precip)[5,]
-    precip <- parse_number(precip)
+    html_txt1 <- page_html %>% html_elements("td") %>% html_text()
+    html_txt1 <- data.frame(html_txt1)
+    precip_index <- which(html_txt1$html_txt1 == "Precipitation Accumulation") + 4
+    precip <- as.numeric(gsub("in\\*", "", html_txt1[precip_index,]))
     html_txt2 <- page_html %>% html_elements("span") %>% html_text()
     html_txt2 <- data.frame(html_txt2)
     name_index <- which(html_txt2$html_txt2 == "Station ID:") + 1
