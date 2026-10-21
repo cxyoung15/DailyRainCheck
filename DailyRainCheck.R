@@ -1,3 +1,4 @@
+library(chromote, quietly = TRUE)
 library(dplyr, quietly = TRUE)
 library(furrr, quietly = TRUE)
 library(future, quietly = TRUE)
@@ -30,7 +31,7 @@ all_links <- link_list$Links
 
 for (links in all_links){
   tryCatch({
-    page_html <- rvest::read_html(links)
+    page_html <- rvest::read_html_live(links)
     html_tab <- page_html %>% html_elements("table") %>% html_table()
     html_tab <- html_tab[1]
     html_txt <- page_html %>% html_elements("div.heading, div.sub-heading") %>% html_text()
