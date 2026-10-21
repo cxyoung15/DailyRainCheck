@@ -118,7 +118,7 @@ rainfall_totals_for_kml <- merge(sga_sta, rainfall_for_kml, by = "Station_ID", a
 rainfall_totals_for_kml <- rainfall_totals_for_kml %>% relocate(`Growing.Area`)
 rainfall_over3 <- rainfall_totals_for_kml %>% filter(Rain >= 3)
 
-if (nrow(rainfall_over3 > 0)){
+if (nrow(rainfall_over3 > 0) == TRUE){
   SGA <- rainfall_over3$`Growing.Area`
   Station <- rainfall_over3$Station
   Latitude <- rainfall_over3$Latitude
